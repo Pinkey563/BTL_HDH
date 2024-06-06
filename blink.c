@@ -6,15 +6,15 @@
 #include <unistd.h>
 #include <string.h>
 
+#define MAX_PINS 10  // Số lượng chân GPIO tối đa bạn muốn hỗ trợ
+
 int main(int argc, char *argv[])
 {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <pin_number>\n", argv[0]);
+    if (argc < 2) {
+        fprintf(stderr, "Usage: %s <pin1> <pin2> ... <pinN>\n", argv[0]);
         return 1;
     }
 
-    char buffer[10];
-    int pin = atoi(argv[1]);
     int f = open("/proc/gpio", O_RDWR);
 
     if (f < 0) {
@@ -23,12 +23,16 @@ int main(int argc, char *argv[])
     }
 
     while (1) {
-        snprintf(buffer, sizeof(buffer), "%d,1", pin);
-        write(f, buffer, strlen(buffer));
-        usleep(500000);
-        snprintf(buffer, sizeof(buffer), "%d,0", pin);
-        write(f, buffer, strlen(buffer));
-        usleep(500000);
+        for (int i = 1; i < argc; i++) {
+            int pin = atoi(argv[i]);
+            char buffer[20];  // Tăng kích thước buffer để chứa dữ liệu
+            snprintf(buffer, sizeof(buffer), "%d,1", pin);
+            write(f, buffer, strlen(buffer));
+            usleep(500000);
+            snprintf(buffer, sizeof(buffer), "%d,0", pin);
+            write(f, buffer, strlen(buffer));
+            usleep(500000);
+        }
     }
 
     close(f);
