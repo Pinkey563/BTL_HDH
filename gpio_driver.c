@@ -62,7 +62,7 @@ ssize_t write(struct file *file, const char __user *user, size_t size, loff_t *o
         return size;
     }
 
-    if (pin < 0 || pin > 53) // Kiểm tra phạm vi chân GPIO hợp lệ
+    if (pin < 0 || pin > 28) // Kiểm tra phạm vi chân GPIO hợp lệ
     {
         printk("Chân GPIO không hợp lệ\n");
         return size;
